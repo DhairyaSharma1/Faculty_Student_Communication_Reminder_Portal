@@ -1,0 +1,286 @@
+/* Main Styles - Earthy Warm Palette */
+:root {
+    --primary: #5E4B3A;
+    --secondary: #C0A48A;
+    --accent: #D17B60;
+    --light-bg: #F4E9D8;
+    --dark-text: #2F2F2F;
+    --light-text: #F4E9D8;
+    --success: #7A9F79;
+    --warning: #E3A15A;
+    --danger: #9E4A4A;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--light-bg);
+    color: var(--dark-text);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+main {
+    flex: 1;
+    padding-bottom: 2rem;
+}
+
+.navbar {
+    background-color: var(--primary) !important;
+    box-shadow: 0 2px 10px rgba(94, 75, 58, 0.2);
+}
+
+.navbar-brand, 
+.nav-link {
+    color: var(--light-text) !important;
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    color: var(--secondary) !important;
+}
+
+.welcome-text {
+    font-weight: 600 !important;
+    color: var(--secondary) !important;
+}
+
+.footer {
+    background-color: var(--primary);
+    color: var(--light-text);
+    margin-top: auto;
+}
+
+.card {
+    box-shadow: 0 2px 8px rgba(94, 75, 58, 0.1);
+    border-radius: 0.75rem;
+    border: none;
+    margin-bottom: 1.5rem;
+    background-color: white;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(94, 75, 58, 0.15);
+}
+
+.card-header {
+    border-radius: 0.75rem 0.75rem 0 0 !important;
+    background-color: var(--primary);
+    color: var(--light-text);
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--light-text);
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background-color: #4A3A2E;
+    border-color: #4A3A2E;
+}
+
+.btn-outline-primary {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary);
+    color: var(--light-text);
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.25rem rgba(209, 123, 96, 0.25);
+    border-color: var(--accent);
+}
+
+.table {
+    vertical-align: middle;
+    background-color: white;
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.table th {
+    background-color: var(--primary);
+    color: var(--light-text);
+}
+
+.table > :not(caption) > * > * {
+    padding: 0.75rem;
+}
+
+.alert-success {
+    background-color: #E8F3E8;
+    color: var(--success);
+    border-color: #D1E7D1;
+}
+
+.alert-warning {
+    background-color: #FDF3E8;
+    color: var(--warning);
+    border-color: #FBE8D1;
+}
+
+.alert-danger {
+    background-color: #FAE8E8;
+    color: var(--danger);
+    border-color: #F5D1D1;
+}
+
+@media (max-width: 768px) {
+    .text-md-end {
+        text-align: left !important;
+        margin-top: 1rem;
+    }
+}
+/* Add this to your main.css */
+.bg-primary {
+    background-color: var(--primary) !important; /* #5E4B3A */
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: var(--light-text) !important;
+}
+
+.navbar-dark .navbar-toggler {
+    color: var(--light-text);
+    border-color: var(--light-text);
+}
+
+/* Smooth transition for modals */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+    transform: translate(0, 0);
+}
+
+.modal .modal-content {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Fade-in effect */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+/* Chat specific styles */
+.chat-container {
+    scrollbar-width: thin;
+    scrollbar-color: var(--secondary) var(--light-bg);
+}
+
+.chat-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+    background: var(--light-bg);
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+    background-color: var(--secondary);
+    border-radius: 4px;
+}
+
+/* Message bubbles */
+.message-bubble {
+    max-width: 70%;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.message-bubble.sent {
+    background-color: var(--primary);
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 0;
+}
+
+.message-bubble.received {
+    background-color: #f1f1f1;
+    margin-right: auto;
+    border-bottom-left-radius: 0;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    display: block;
+    margin-top: 0.25rem;
+}
+
+.message-time.received {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+/* Inbox styles */
+.conversation-item {
+    transition: all 0.2s ease;
+}
+
+.conversation-item:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.unread-badge {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--danger);
+    display: inline-block;
+    margin-left: 0.5rem;
+}
+/* Message Inbox Styles */
+.conversation-list {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.conversation-item {
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.conversation-item:hover {
+    background-color: rgba(94, 75, 58, 0.05);
+    border-left-color: var(--primary);
+}
+
+.conversation-item.active {
+    background-color: rgba(94, 75, 58, 0.1);
+    border-left-color: var(--primary);
+}
+
+.empty-state {
+    opacity: 0.6;
+}
+
+/* Modal Styles */
+.modal-backdrop {
+    background-color: rgba(94, 75, 58, 0.5);
+}
+
+/* Message bubbles */
+.message-preview {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    display: inline-block;
+}

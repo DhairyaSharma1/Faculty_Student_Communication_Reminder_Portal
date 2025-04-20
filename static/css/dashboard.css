@@ -1,0 +1,86 @@
+/* Dashboard Styles */
+.dashboard-header {
+    background-color: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(94, 75, 58, 0.1);
+}
+
+.dashboard-header h1 {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.dashboard-header p {
+    color: var(--dark-text);
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-divider {
+    border-top: 2px solid var(--secondary);
+    opacity: 0.5;
+    margin: 1.5rem 0;
+}
+
+.assignment-table {
+    background-color: white;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(94, 75, 58, 0.1);
+}
+
+.assignment-table th {
+    background-color: var(--primary);
+    color: white;
+    font-weight: 600;
+}
+
+.assignment-table tr:hover {
+    background-color: #F9F5F0;
+}
+
+.action-btn {
+    color: var(--accent);
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.action-btn:hover {
+    color: var(--primary);
+}
+
+.status-badge {
+    padding: 0.35rem 0.65rem;
+    border-radius: 50rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.badge-due-soon {
+    background-color: var(--warning);
+    color: white;
+}
+
+.badge-overdue {
+    background-color: var(--danger);
+    color: white;
+}
+
+.badge-completed {
+    background-color: var(--success);
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--secondary);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--secondary);
+}

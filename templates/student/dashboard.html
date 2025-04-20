@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard - Classroom App{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2>Welcome, {{ student.name }}</h2>
+        <p class="text-muted">Section: {{ student.section }} | Roll Number: {{ student.roll_number }}</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Your Assignments</h4>
+            </div>
+            <div class="card-body">
+                {% if assignment_details %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Subject</th>
+                                    <th>Teacher</th>
+                                    <th>Due Date</th>
+                                    <th>Notification</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detail in assignment_details %}
+                                    <tr>
+                                        <td>{{ detail.assignment.title }}</td>
+                                        <td>{{ detail.subject }}</td>
+                                        <td>{{ detail.teacher_name }}</td>
+                                        <td>{{ detail.assignment.due_date.strftime('%Y-%m-%d') }}</td>
+                                        <td>
+                                            <a href="{{ url_for('student.view_assignment', id=detail.assignment.id) }}" class="btn btn-sm btn-outline-primary">
+                                                View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        No assignments are currently available for your section.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

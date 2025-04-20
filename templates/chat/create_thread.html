@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Create New Discussion Thread</h1>
+    
+    <form method="post" action="{{ url_for('teacher.create_thread') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="section" class="form-label">Section</label>
+            <input type="text" class="form-control" id="section" name="section" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Create Thread</button>
+        <a href="{{ url_for('teacher.discussions') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

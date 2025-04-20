@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Discussion Forum</h2>
+    {% if current_user.is_teacher %}
+    <a href="{{ url_for('teacher.create_thread') }}" class="btn btn-primary mb-3">New Thread</a>
+    {% endif %}
+    
+    <div class="list-group">
+        {% for thread in threads %}
+        <a href="{{ url_for('student.view_thread' if not current_user.is_teacher else 'teacher.view_thread', thread_id=thread.id) }}" 
+           class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ thread.title }}</h5>
+                <small>Section: {{ thread.section }}</small>
+            </div>
+            <p class="mb-1">Started by {{ thread.creator.username }}</p>
+            <small>{{ thread.posts.count() }} posts</small>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

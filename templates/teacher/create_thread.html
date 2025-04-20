@@ -1,0 +1,24 @@
+<ul class="navbar-nav me-auto">
+    {% if current_user.is_authenticated %}
+        {% if current_user.is_teacher %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('teacher.dashboard') }}">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('teacher.create_assignment') }}">Create Assignment</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('student.dashboard') }}">Dashboard</a>
+            </li>
+        {% endif %}
+
+        <!-- Add Messages and Discussions links here -->
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('student.messages' if not current_user.is_teacher else 'teacher.messages') }}">Messages</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('student.discussions' if not current_user.is_teacher else 'teacher.discussions') }}">Discussions</a>
+        </li>
+    {% endif %}
+</ul>

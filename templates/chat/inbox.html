@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Messages</h2>
+    <div class="list-group">
+        {% for partner in chat_partners %}
+        <a href="{{ url_for('student.chat' if not current_user.is_teacher else 'teacher.chat', user_id=partner.user.id) }}" 
+           class="list-group-item list-group-item-action {% if partner.unread %}font-weight-bold{% endif %}">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ partner.user.username }}</h5>
+                <small>{{ partner.last_message.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+            </div>
+            <p class="mb-1">{{ partner.last_message.content|truncate(50) }}</p>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
