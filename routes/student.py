@@ -123,40 +123,16 @@ def view_assignment(id):
 # Messaging System
 @student_bp.route('/messages')
 @login_required
+# In both teacher.py and student.py, add this route:
 def messages():
     if current_user.is_teacher:
-        abort(403)
-    
-    student = Student.query.filter_by(user_id=current_user.id).first()
-    if not student:
-        return redirect(url_for('student.complete_profile'))
-    
-    # Get distinct conversations
-    sent_messages = Message.query.filter_by(sender_id=current_user.id).all()
-    received_messages = Message.query.filter_by(recipient_id=current_user.id).all()
-    all_messages = sent_messages + received_messages
-    
-    # Organize by other user
-    partners = {}
-    for msg in all_messages:
-        other_id = msg.sender_id if msg.sender_id != current_user.id else msg.recipient_id
-        if other_id not in partners:
-            user = User.query.get(other_id)
-            if user:
-                partners[other_id] = {
-                    'user': user,
-                    'last_message': msg,
-                    'unread': msg.recipient_id == current_user.id and not msg.read
-                }
-    
-    # Get all teachers for new message modal
-    teachers = User.query.filter_by(is_teacher=True).all()
-    
-    return render_template('chat/inbox.html',
-                         chat_partners=partners.values(),
-                         all_users=teachers,
-                         student=student)
-
+        teacher = Teacher.query.filter_by(user_id=current_user.id).first_or_404()
+        students = Student.query.all()
+        return render_template('chat/chat.html', students=students)
+    else:
+        student = Student.query.filter_by(user_id=current_user.id).first_or_404()
+        teachers = Teacher.query.all()
+        return render_template('chat/chat.html', teachers=teachers)
 @student_bp.route('/messages/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def chat(user_id):
@@ -288,3 +264,78 @@ def view_thread(thread_id):
                          posts=posts,
                          form=form,
                          student=student)
+
+@student_bp.route('/assignments/<int:assignment_id>/submit', methods=['GET', 'POST'])
+@login_required
+def submit_assignment(assignment_id):
+    if current_user.is_teacher:
+        abort(403)
+    
+    student = Student.query.filter_by(user_id=current_user.id).first()
+    if not student:
+        return redirect(url_for('student.complete_profile'))
+    
+    assignment = Assignment.query.get_or_404(assignment_id)
+    if assignment.section != student.section:
+        abort(403)
+    
+    # Check if already submitted
+    existing_submission = Submission.query.filter_by(
+        assignment_id=assignment_id,
+        student_id=current_user.id
+    ).first()
+    
+    form = SubmissionForm()
+    if form.validate_on_submit():
+        # Check for late submission
+        is_late = datetime.utcnow() > assignment.due_date
+        
+        # Handle file upload
+        file_path = None
+        if form.file.data:
+            filename = secure_filename(form.file.data.filename)
+            os.makedirs(current_app.config['UPLOAD_FOLDER'], exist_ok=True)
+            file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            form.file.data.save(file_path)
+        
+        if existing_submission:
+            # Update existing submission
+            existing_submission.content = form.content.data
+            existing_submission.file_path = file_path
+            existing_submission.is_late = is_late
+            existing_submission.submission_time = datetime.utcnow()
+            existing_submission.status = 'Late' if is_late else 'Resubmitted'
+        else:
+            # Create new submission
+            submission = Submission(
+                assignment_id=assignment_id,
+                student_id=current_user.id,
+                content=form.content.data,
+                file_path=file_path,
+                is_late=is_late,
+                status='Late' if is_late else 'Submitted'
+            )
+            db.session.add(submission)
+        
+        db.session.commit()
+        flash('Assignment submitted successfully!', 'success')
+        return redirect(url_for('student.view_assignment', id=assignment_id))
+    
+    return render_template('student/submission_form.html',
+                         title='Submit Assignment',
+                         assignment=assignment,
+                         form=form,
+                         existing_submission=existing_submission)
+
+@student_bp.route('/submissions/<int:submission_id>')
+@login_required
+def view_submission(submission_id):
+    if current_user.is_teacher:
+        abort(403)
+    
+    submission = Submission.query.get_or_404(submission_id)
+    if submission.student_id != current_user.id:
+        abort(403)
+    
+    return render_template('student/view_submission.html',
+                         submission=submission)

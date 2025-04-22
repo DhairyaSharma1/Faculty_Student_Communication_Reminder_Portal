@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request, abort
 from flask_login import login_required, current_user
-from models import db, Teacher, Assignment, Message, DiscussionThread, DiscussionPost, User
+from models import db, Teacher, Assignment, Message, DiscussionThread, DiscussionPost, User, Student
 from forms import AssignmentForm, MessageForm, DiscussionPostForm
 from routes import teacher_bp
 from datetime import datetime
@@ -100,36 +100,18 @@ def delete_assignment(id):
     flash('Assignment deleted successfully!', 'success')
     return redirect(url_for('teacher.dashboard'))
 
-@teacher_bp.route('/messages')
+# In both teacher.py and student.py, add this route:
+@teacher_bp.route('/messages')  # or @student_bp.route('/messages')
 @login_required
 def messages():
-    """View all conversations"""
-    if not current_user.is_teacher:
-        abort(403)
-    
-    teacher = Teacher.query.filter_by(user_id=current_user.id).first()
-    if not teacher:
-        return redirect(url_for('auth.complete_profile'))
-    
-    # Get conversations
-    conversations = db.session.query(Message).filter(
-        (Message.sender_id == current_user.id) | 
-        (Message.recipient_id == current_user.id)
-    ).order_by(Message.timestamp.desc()).all()
-    
-    # Organize by other user
-    chat_partners = {}
-    for msg in conversations:
-        other_id = msg.sender_id if msg.sender_id != current_user.id else msg.recipient_id
-        if other_id not in chat_partners:
-            chat_partners[other_id] = {
-                'user': User.query.get(other_id),
-                'last_message': msg,
-                'unread': False
-            }
-        if msg.recipient_id == current_user.id and not msg.read:
-            chat_partners[other_id]['unread'] = True
-    
+    if current_user.is_teacher:
+        teacher = Teacher.query.filter_by(user_id=current_user.id).first_or_404()
+        students = Student.query.all()
+        return render_template('chat/chat.html', students=students)
+    else:
+        student = Student.query.filter_by(user_id=current_user.id).first_or_404()
+        teachers = Teacher.query.all()
+        return render_template('chat/chat.html', teachers=teachers)
     # Get all users for new message modal
     all_users = User.query.filter(User.id != current_user.id).all()
     
@@ -304,3 +286,55 @@ def send_message():
     
     flash('Message sent!', 'success')
     return redirect(url_for('teacher.chat', user_id=recipient_id))
+
+@teacher_bp.route('/assignments/<int:assignment_id>/submissions')
+@login_required
+def view_submissions(assignment_id):
+    if not current_user.is_teacher:
+        abort(403)
+    
+    assignment = Assignment.query.get_or_404(assignment_id)
+    if assignment.teacher_id != current_user.id:
+        abort(403)
+    
+    submissions = Submission.query.filter_by(assignment_id=assignment_id)\
+                                .order_by(Submission.submission_time).all()
+    
+    # Mark late submissions
+    for submission in submissions:
+        if submission.submission_time > assignment.due_date and not submission.is_late:
+            submission.is_late = True
+            submission.status = 'Late'
+            db.session.commit()
+    
+    return render_template('teacher/submission_list.html',
+                         title='Submissions',
+                         assignment=assignment,
+                         submissions=submissions)
+
+@teacher_bp.route('/submissions/<int:submission_id>/grade', methods=['GET', 'POST'])
+@login_required
+def grade_submission(submission_id):
+    if not current_user.is_teacher:
+        abort(403)
+    
+    submission = Submission.query.get_or_404(submission_id)
+    assignment = Assignment.query.get(submission.assignment_id)
+    
+    if assignment.teacher_id != current_user.id:
+        abort(403)
+    
+    form = GradeSubmissionForm()
+    if form.validate_on_submit():
+        submission.grade = form.grade.data
+        submission.feedback = form.feedback.data
+        submission.status = 'Graded'
+        db.session.commit()
+        flash('Grade submitted successfully!', 'success')
+        return redirect(url_for('teacher.view_submissions', assignment_id=assignment.id))
+    
+    return render_template('teacher/grade_submission.html',
+                         title='Grade Submission',
+                         submission=submission,
+                         assignment=assignment,
+                         form=form)

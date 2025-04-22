@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField, DateField, TextAreaField
-from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField, DateTimeField, FloatField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, NumberRange
 from models import User
+from flask_wtf.file import FileField, FileAllowed
 
 class LoginForm(FlaskForm):
     """Form for user login"""
@@ -49,7 +50,12 @@ class AssignmentForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(min=2, max=100)])
     description = TextAreaField('Description', validators=[DataRequired()])
     section = StringField('Section', validators=[DataRequired()])
-    due_date = DateField('Due Date', validators=[DataRequired()], format='%Y-%m-%d')
+    # Changed from DateField to DateTimeField to match what's expected in the route
+    due_date = DateTimeField('Due Date', validators=[DataRequired()], format='%Y-%m-%d')
+    attachment = FileField('Attachment (Optional)', validators=[
+        FileAllowed(['pdf', 'doc', 'docx', 'txt', 'zip'], 
+                  'Allowed file types: PDF, Word, Text, ZIP')
+    ])
     submit = SubmitField('Save Assignment')
 
 class MessageForm(FlaskForm):
@@ -59,3 +65,9 @@ class MessageForm(FlaskForm):
 class DiscussionPostForm(FlaskForm):
     content = TextAreaField('Your Post', validators=[DataRequired()])
     submit = SubmitField('Post')
+
+class GradeSubmissionForm(FlaskForm):
+    """Form for grading student submissions"""
+    grade = FloatField('Grade', validators=[DataRequired(), NumberRange(min=0, max=100)])
+    feedback = TextAreaField('Feedback')
+    submit = SubmitField('Submit Grade')

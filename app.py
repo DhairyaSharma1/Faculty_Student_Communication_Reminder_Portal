@@ -4,8 +4,7 @@ from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
 from config import Config
 from models import db, User
-from routes import auth_bp, teacher_bp, student_bp
-from routes.chat import chat_bp
+from routes import auth_bp, teacher_bp, student_bp, chat_bp
 
 def create_app(config_class=Config):
     """Create and configure the Flask application"""
@@ -34,6 +33,7 @@ def create_app(config_class=Config):
     app.register_blueprint(teacher_bp)
     app.register_blueprint(student_bp)
     app.register_blueprint(chat_bp)
+
     # Root route
     @app.route('/')
     def index():

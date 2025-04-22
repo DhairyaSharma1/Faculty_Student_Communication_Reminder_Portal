@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Submissions for {{ assignment.title }}</h2>
+    <p>Due: {{ assignment.due_date.strftime('%Y-%m-%d %H:%M') }}</p>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Submission Time</th>
+                <th>Status</th>
+                <th>Grade</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in submissions %}
+            <tr class="{% if submission.is_late %}table-warning{% endif %}">
+                <td>{{ submission.student.username }}</td>
+                <td>{{ submission.submission_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>
+                    {{ submission.status }}
+                    {% if submission.is_late %}(Late){% endif %}
+                </td>
+                <td>
+                    {% if submission.grade is not none %}
+                        {{ submission.grade }}%
+                    {% else %}
+                        Not graded
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('teacher.grade_submission', submission_id=submission.id) }}" 
+                       class="btn btn-sm btn-primary">
+                        Grade
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

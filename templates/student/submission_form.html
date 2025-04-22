@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Submit Assignment: {{ assignment.title }}</h2>
+    <p>Due: {{ assignment.due_date.strftime('%Y-%m-%d %H:%M') }}</p>
+    
+    {% if existing_submission %}
+    <div class="alert alert-info">
+        You've already submitted this assignment. Submitting again will overwrite your previous submission.
+    </div>
+    {% endif %}
+    
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            {{ form.content.label }}
+            {{ form.content(class="form-control", rows=5) }}
+        </div>
+        
+        <div class="form-group">
+            {{ form.file.label }}
+            {{ form.file(class="form-control-file") }}
+            <small class="form-text text-muted">
+                Allowed file types: PDF, Word, Text, ZIP, Images
+            </small>
+        </div>
+        
+        <div class="form-group">
+            {{ form.link.label }}
+            {{ form.link(class="form-control", placeholder="https://...") }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">
+            {{ 'Update Submission' if existing_submission else 'Submit Assignment' }}
+        </button>
+    </form>
+</div>
+{% endblock %}

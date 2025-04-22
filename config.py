@@ -42,3 +42,7 @@ class Config:
 
     # Rate Limiting
     RATELIMIT_DEFAULT = "200 per day;50 per hour"
+    
+    UPLOAD_FOLDER = 'uploads'
+    ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'txt', 'zip', 'png', 'jpg', 'jpeg'}
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  

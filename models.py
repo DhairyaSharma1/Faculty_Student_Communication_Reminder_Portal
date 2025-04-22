@@ -14,12 +14,12 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256), nullable=False)  # Increased from 128 to 256
     is_teacher = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     def set_password(self, password):
         """Generate a password hash using scrypt (longer but more secure)"""
         self.password_hash = generate_password_hash(
             password,
-            method='scrypt',  # Uses longer hashes
+            method='scrypt', 
             salt_length=16
         )
         
@@ -60,25 +60,38 @@ class Assignment(db.Model):
     due_date = db.Column(db.DateTime, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable=False)
+    submissions = db.relationship('Submission', backref='assignment', lazy=True, cascade='all, delete-orphan')
+
+    """Assignment model"""
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    section = db.Column(db.String(20), nullable=False)  # To filter assignments by section
+    due_date = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable=False)
     
-    # Add a file attachment column if needed
-    # file_path = db.Column(db.String(255))
+    # Use a consistent backref name
 
-# Add to your existing models.py
-
+# models.py (update the Message model)
 class Message(db.Model):
-    """One-on-one messages between users"""
+    """Enhanced message model with read receipts"""
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     read = db.Column(db.Boolean, default=False)
+    read_at = db.Column(db.DateTime, nullable=True)  # Only keep this one
 
     # Relationships
     sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_messages')
     recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_messages')
-
+    def mark_as_read(self):
+        if not self.read:
+            self.read = True
+            self.read_at = datetime.utcnow()
+            db.session.commit()
 class DiscussionThread(db.Model):
     """Forum discussion threads"""
     id = db.Column(db.Integer, primary_key=True)
@@ -101,3 +114,22 @@ class DiscussionPost(db.Model):
     
     # Relationship
     author = db.relationship('User', backref='posts')
+
+class Submission(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    submission_time = db.Column(db.DateTime, default=datetime.utcnow)
+    content = db.Column(db.Text)
+    file_path = db.Column(db.String(255))
+    is_late = db.Column(db.Boolean, default=False)
+    grade = db.Column(db.Float, nullable=True)
+    feedback = db.Column(db.Text, nullable=True)
+    status = db.Column(db.String(20), default='Submitted')
+
+    # Simplified relationship definitions with unique backref names
+    # No need to repeat backref in the assignment relationship as it's defined in Assignment class
+    student = db.relationship('User', backref='submissions')
+
+    def __repr__(self):
+        return f"<Submission {self.id} for Assignment {self.assignment_id}>"
