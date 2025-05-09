@@ -339,4 +339,7 @@ def view_submission(submission_id):
     
     return render_template('student/view_submission.html',
                          submission=submission)
+<<<<<<< HEAD
 
+=======
+>>>>>>> c2dd40ed88365091e1bc6fe343935fa31fd2ccf9

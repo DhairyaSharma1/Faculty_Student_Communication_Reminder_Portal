@@ -132,4 +132,8 @@ class Submission(db.Model):
     student = db.relationship('User', backref='submissions')
 
     def __repr__(self):
+<<<<<<< HEAD
         return f"<Submission {self.id} for Assignment {self.assignment_id}>"
+=======
+        return f"<Submission {self.id} for Assignment {self.assignment_id}>"
+>>>>>>> c2dd40ed88365091e1bc6fe343935fa31fd2ccf9

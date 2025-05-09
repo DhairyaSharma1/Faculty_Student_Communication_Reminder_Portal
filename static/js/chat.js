@@ -445,4 +445,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initial load
     loadConversations();
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> c2dd40ed88365091e1bc6fe343935fa31fd2ccf9

@@ -215,4 +215,8 @@ def mark_as_read(user_id):
     except Exception as e:
         print(f"Unexpected error in mark_as_read: {str(e)}")
         traceback.print_exc()
+<<<<<<< HEAD
         return jsonify({'success': False, 'error': 'An unexpected error occurred'}), 500
+=======
+        return jsonify({'success': False, 'error': 'An unexpected error occurred'}), 500
+>>>>>>> c2dd40ed88365091e1bc6fe343935fa31fd2ccf9
