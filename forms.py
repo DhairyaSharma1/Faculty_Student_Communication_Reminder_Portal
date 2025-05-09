@@ -71,3 +71,4 @@ class GradeSubmissionForm(FlaskForm):
     grade = FloatField('Grade', validators=[DataRequired(), NumberRange(min=0, max=100)])
     feedback = TextAreaField('Feedback')
     submit = SubmitField('Submit Grade')
+

@@ -16,7 +16,7 @@ class SubmissionForm(FlaskForm):
     ])
     link = TextAreaField('Or paste a link', validators=[Optional()])
     submit = SubmitField('Submit Assignment')
-
+    
 class GradeSubmissionForm(FlaskForm):
     grade = FloatField('Grade', validators=[
         DataRequired(),
