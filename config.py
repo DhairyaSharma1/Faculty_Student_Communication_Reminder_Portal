@@ -6,16 +6,11 @@ load_dotenv()
 
 class Config:
     # ===== Security =====
-    SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)  # Fallback to random key if not set
+    SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
     
     # ===== Database Configuration =====
-    # Prioritize Render's PostgreSQL, fallback to SQLite for local development
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', '').replace(
-        'postgres://', 'postgresql://'  # Required for SQLAlchemy 1.4.x+
-    ) or 'sqlite:///instance/classroom_db.sqlite'  # Local fallback
-    
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///instance/classroom_db.sqlite'  # Force SQLite
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}  # Recommended for Render
 
     # ===== Session Security =====
     SESSION_COOKIE_SECURE = os.getenv('SESSION_SECURE', 'False').lower() in ('true', '1', 't')
@@ -37,16 +32,12 @@ class Config:
     RATELIMIT_DEFAULT = "200 per day;50 per hour"
 
     # ===== File Uploads =====
-    UPLOAD_FOLDER = os.path.join('instance', 'uploads')  # Store in instance folder
+    UPLOAD_FOLDER = os.path.join('instance', 'uploads')
     ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'txt', 'zip', 'png', 'jpg', 'jpeg'}
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
 
     # ===== Render-Specific Optimizations =====
-    if os.environ.get('RENDER', None):  # Detect if running on Render
-        # Disable SQLite when in production
-        if 'sqlite' in SQLALCHEMY_DATABASE_URI:
-            raise ValueError("SQLite not allowed in production - use PostgreSQL")
-        
-        # Production-specific settings
-        SESSION_COOKIE_SECURE = True  # Force HTTPS
+    if os.environ.get('RENDER', None):
+        # Production-specific settings (without PostgreSQL enforcement)
+        SESSION_COOKIE_SECURE = True
         PREFERRED_URL_SCHEME = 'https'
