@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
@@ -13,17 +13,11 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     
-    # ===== Ensure instance folder exists =====
-    instance_path = Path('instance')
-    instance_path.mkdir(exist_ok=True)
-    
-    # ===== Database Initialization =====
+    # Initialize extensions
     db.init_app(app)
-    
-    # ===== Security Extensions =====
     csrf = CSRFProtect(app)
     
-    # ===== Flask-Login Setup =====
+    # Flask-Login setup
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
@@ -33,28 +27,37 @@ def create_app(config_class=Config):
     def load_user(user_id):
         return User.query.get(int(user_id))
     
-    # ===== Database Migrations =====
+    # Database migrations
     migrate = Migrate(app, db)
     
-    # ===== Blueprint Registration =====
+    # Register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(teacher_bp)
     app.register_blueprint(student_bp)
     app.register_blueprint(chat_bp)
 
-    # ===== Root Route =====
+    # Root route
     @app.route('/')
     def index():
-        """Redirect to the login page"""
         return redirect(url_for('auth.login'))
     
-    # ===== Database Setup =====
+    # Initialize database and folders
     with app.app_context():
-        # Always create tables for SQLite
-        db.create_all()
-        
-        # Ensure upload folder exists
-        upload_path = instance_path / 'uploads'
-        upload_path.mkdir(exist_ok=True)
+        try:
+            # Create required directories
+            instance_path = Path(app.instance_path)
+            instance_path.mkdir(exist_ok=True)
+            (instance_path / 'uploads').mkdir(exist_ok=True)
+            
+            # Create tables
+            db.create_all()
+        except Exception as e:
+            app.logger.error(f"Initialization error: {str(e)}")
     
     return app
+
+# Required for Gunicorn
+app = create_app()
+
+if __name__ == '__main__':
+    app.run()
