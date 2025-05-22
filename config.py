@@ -14,7 +14,8 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or os.urandom(24)
     
     # ===== Database Configuration =====
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + str(instance_path / 'classroom_db.sqlite')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+                         f'sqlite:///{instance_path}/classroom_db.sqlite?check_same_thread=False'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_pre_ping': True,
