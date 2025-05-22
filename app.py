@@ -40,4 +40,7 @@ def create_app(config_class=Config):
         """Redirect to the login page"""
         return redirect(url_for('auth.login'))
     
+    with app.app_context():
+        db.create_all()
+    
     return app

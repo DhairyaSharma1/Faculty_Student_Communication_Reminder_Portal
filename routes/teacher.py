@@ -338,7 +338,3 @@ def grade_submission(submission_id):
                          submission=submission,
                          assignment=assignment,
                          form=form)
-<<<<<<< HEAD
-
-=======
->>>>>>> c2dd40ed88365091e1bc6fe343935fa31fd2ccf9

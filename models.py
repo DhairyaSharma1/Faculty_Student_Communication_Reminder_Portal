@@ -62,15 +62,6 @@ class Assignment(db.Model):
     teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable=False)
     submissions = db.relationship('Submission', backref='assignment', lazy=True, cascade='all, delete-orphan')
 
-    """Assignment model"""
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text)
-    section = db.Column(db.String(20), nullable=False)  # To filter assignments by section
-    due_date = db.Column(db.DateTime, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable=False)
-    
     # Use a consistent backref name
 
 # models.py (update the Message model)
@@ -132,8 +123,4 @@ class Submission(db.Model):
     student = db.relationship('User', backref='submissions')
 
     def __repr__(self):
-<<<<<<< HEAD
         return f"<Submission {self.id} for Assignment {self.assignment_id}>"
-=======
-        return f"<Submission {self.id} for Assignment {self.assignment_id}>"
->>>>>>> c2dd40ed88365091e1bc6fe343935fa31fd2ccf9
