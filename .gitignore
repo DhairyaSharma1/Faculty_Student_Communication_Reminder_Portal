@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+env/
+
+# Secrets
+.env
+.env.local
+instance/*
+
+# Database and logs
+*.sqlite
+*.log
+tmp/
+
+# IDE
+.vscode/
+.idea/
+"@
