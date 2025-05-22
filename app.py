@@ -8,17 +8,14 @@ from routes import auth_bp, teacher_bp, student_bp, chat_bp
 import os
 
 def create_app(config_class=Config):
-    """Create and configure the Flask application"""
     app = Flask(__name__)
     app.config.from_object(config_class)
     
-    # ===== Database Initialization =====
+    # Initialize extensions
     db.init_app(app)
-    
-    # ===== Security Extensions =====
     csrf = CSRFProtect(app)
     
-    # ===== Flask-Login Setup =====
+    # Flask-Login setup
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
@@ -28,24 +25,21 @@ def create_app(config_class=Config):
     def load_user(user_id):
         return User.query.get(int(user_id))
     
-    # ===== Database Migrations =====
+    # Database migrations (optional for SQLite)
     migrate = Migrate(app, db)
     
-    # ===== Blueprint Registration =====
+    # Register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(teacher_bp)
     app.register_blueprint(student_bp)
     app.register_blueprint(chat_bp)
 
-    # ===== Root Route =====
     @app.route('/')
     def index():
-        """Redirect to the login page"""
         return redirect(url_for('auth.login'))
     
-    # ===== Database Table Creation =====
+    # Always create tables (SQLite needs this on Render)
     with app.app_context():
-        if os.environ.get('FLASK_ENV') == 'development':
-            db.create_all()  # Only for development (Render uses migrations)
+        db.create_all()  # Remove env check to force table creation
     
     return app
