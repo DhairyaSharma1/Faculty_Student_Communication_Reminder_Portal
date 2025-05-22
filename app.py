@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for
+from flask import Flask
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect
@@ -6,16 +6,24 @@ from config import Config
 from models import db, User
 from routes import auth_bp, teacher_bp, student_bp, chat_bp
 import os
+from pathlib import Path
 
 def create_app(config_class=Config):
+    """Create and configure the Flask application"""
     app = Flask(__name__)
     app.config.from_object(config_class)
     
-    # Initialize extensions
+    # ===== Ensure instance folder exists =====
+    instance_path = Path('instance')
+    instance_path.mkdir(exist_ok=True)
+    
+    # ===== Database Initialization =====
     db.init_app(app)
+    
+    # ===== Security Extensions =====
     csrf = CSRFProtect(app)
     
-    # Flask-Login setup
+    # ===== Flask-Login Setup =====
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
@@ -25,21 +33,28 @@ def create_app(config_class=Config):
     def load_user(user_id):
         return User.query.get(int(user_id))
     
-    # Database migrations (optional for SQLite)
+    # ===== Database Migrations =====
     migrate = Migrate(app, db)
     
-    # Register blueprints
+    # ===== Blueprint Registration =====
     app.register_blueprint(auth_bp)
     app.register_blueprint(teacher_bp)
     app.register_blueprint(student_bp)
     app.register_blueprint(chat_bp)
 
+    # ===== Root Route =====
     @app.route('/')
     def index():
+        """Redirect to the login page"""
         return redirect(url_for('auth.login'))
     
-    # Always create tables (SQLite needs this on Render)
+    # ===== Database Setup =====
     with app.app_context():
-        db.create_all()  # Remove env check to force table creation
+        # Always create tables for SQLite
+        db.create_all()
+        
+        # Ensure upload folder exists
+        upload_path = instance_path / 'uploads'
+        upload_path.mkdir(exist_ok=True)
     
     return app
