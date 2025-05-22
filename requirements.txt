@@ -6,3 +6,4 @@ flask-migrate==4.0.4
 psycopg2-binary==2.9.6  # Critical for Render's PostgreSQL
 python-dotenv==1.0.0   # For .env support
 gunicorn==20.1.0       # Required for Render's production server
+werkzeug==2.3.7  # Critical fix - last version with url_decode
